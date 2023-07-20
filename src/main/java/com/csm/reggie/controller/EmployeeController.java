@@ -12,7 +12,6 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 
 @Slf4j
 @RestController
@@ -57,6 +56,7 @@ public class EmployeeController {
 
         //6.登录成功，将员工id存入Session并返回登录成功结果
         request.getSession().setAttribute("employee", emp.getId());
+//        log.info("当前线程的id为 {}", Thread.currentThread().getId());
         return R.success(emp);
 
     }
@@ -89,16 +89,15 @@ public class EmployeeController {
         log.info("新增员工，员工信息: {}", employee.toString());
         //设置初始密码123456，需要进行md5加密
         employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
-
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
-
-        //获得当前操作用户的id
-
-        Long empId = (Long) request.getSession().getAttribute("employee");
-
-        employee.setCreateUser(empId);
-        employee.setUpdateUser(empId);
+        //公共字段已经自动填充
+//        employee.setCreateTime(LocalDateTime.now());
+//        employee.setUpdateTime(LocalDateTime.now());
+//
+//        //获得当前操作用户的id
+//
+//        Long empId = (Long) request.getSession().getAttribute("employee");
+//        employee.setCreateUser(empId);
+//        employee.setUpdateUser(empId);
 
         employeeService.save(employee);
 
@@ -150,8 +149,8 @@ public class EmployeeController {
         //设置需要修改的字段
         //从session中获取当前操作人的id
         Long empId = (Long)request.getSession().getAttribute("employee");
-        employee.setUpdateUser(empId);
-        employee.setUpdateTime(LocalDateTime.now());
+//        employee.setUpdateUser(empId);   公共字段自动填充了
+//        employee.setUpdateTime(LocalDateTime.now());    公共字段自动填充了
         //保存
         employeeService.updateById(employee);
         return R.success("员工信息修改成功");

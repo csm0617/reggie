@@ -1,6 +1,7 @@
 package com.csm.reggie.filter;
 
 import com.alibaba.fastjson.JSON;
+import com.csm.reggie.common.BaseContext;
 import com.csm.reggie.common.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
@@ -33,7 +34,12 @@ public class LoginCheckFilter implements Filter {
         log.info("拦截到请求: {}", requestURI);
         //4.判断登陆状态，如果已登录，就直接放行
         if (request.getSession().getAttribute("employee") != null){
-            log.info("用户已登录,用户id为: {}",request.getSession().getAttribute("employee"));
+            Long empId = (Long)request.getSession().getAttribute("employee");
+            log.info("用户已登录,用户id为: {}",empId);
+            //输出检查一下当前线程的Id看看是否和登录是同一个线程
+            log.info("当前线程的id为 {}", Thread.currentThread().getId());
+            //将empId存入threadLocal封装类中保存
+            BaseContext.setCurrentId(empId);
             filterChain.doFilter(request,response);
             return;
         }
