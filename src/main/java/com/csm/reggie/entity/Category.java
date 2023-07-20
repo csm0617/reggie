@@ -51,6 +51,7 @@ public class Category implements Serializable {
 
 
     //是否删除
+    @TableField(value = "isDeleted",select = false)
     private Integer isDeleted;
 
 }
