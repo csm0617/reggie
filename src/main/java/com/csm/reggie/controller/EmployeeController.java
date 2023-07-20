@@ -106,6 +106,14 @@ public class EmployeeController {
 
     }
 
+    /**
+     * 分页查询员工信息
+     * @param page
+     * @param pageSize
+     * @param name
+     * @return
+     */
+
     @GetMapping("/page")
     public R<Page> page(int page, int pageSize, String name) {
         //打印一下入参
@@ -127,5 +135,40 @@ public class EmployeeController {
         employeeService.page(pageInfo,queryWrapper);
         return R.success(pageInfo);
     }
+
+
+    /**
+     *根据id编辑员工信息
+     * @param request
+     * @param employee
+     * @return
+     */
+    @PutMapping()
+    public R<String> update(HttpServletRequest request, @RequestBody Employee employee){
+        //可以在此处打断点或者输出日志查看入参
+        log.info(employee.toString());
+        //设置需要修改的字段
+        //从session中获取当前操作人的id
+        Long empId = (Long)request.getSession().getAttribute("employee");
+        employee.setUpdateUser(empId);
+        employee.setUpdateTime(LocalDateTime.now());
+        //保存
+        employeeService.updateById(employee);
+        return R.success("员工信息修改成功");
+    }
+
+
+    /**
+     * 根据单个id查询员工信息并返回提供给前端用于编辑的时候回显。
+     * @param id
+     * @return
+     */
+
+    @GetMapping("{id}")
+    public R<Employee> getById(@PathVariable Long id){
+        Employee emp = employeeService.getById(id);
+        return R.success(emp);
+    }
+
 
 }
