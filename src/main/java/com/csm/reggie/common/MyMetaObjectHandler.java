@@ -27,7 +27,8 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
         log.info("当前线程的id为 {}", Thread.currentThread().getId());
         metaObject.setValue("createTime", LocalDateTime.now());
         metaObject.setValue("updateTime", LocalDateTime.now());
-        metaObject.setValue("creatUser", BaseContext.getCurrentId());
+        log.info("当前用户id {}",BaseContext.getCurrentId());
+        metaObject.setValue("createUser", BaseContext.getCurrentId());
         metaObject.setValue("updateUser", BaseContext.getCurrentId());
     }
 
