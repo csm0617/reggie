@@ -42,4 +42,26 @@ public class CategoryController {
         return R.success(pageInfo);
     }
 
+    /**
+     * 根据id删除分类信息，如果菜品或者套餐绑定了该分类则不允许删除
+     * @param ids
+     * @return
+     */
+
+    @DeleteMapping()
+    public R<String> delete(Long ids){
+        //日志输出入参
+        log.info("删除分类，id为： {}",ids);
+        categoryService.remove(ids);
+        return R.success("分类信息删除成功");
+    }
+
+    @PutMapping()
+    public R<String> update(@RequestBody Category category){
+        //输出入参
+        log.info("删除的分类为：{}",category.toString());
+        categoryService.updateById(category);
+        return R.success("分类修改成功");
+    }
+
 }
