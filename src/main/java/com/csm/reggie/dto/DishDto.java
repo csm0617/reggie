@@ -8,7 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
+//注意DishDto 继承了 Dish
 public class DishDto extends Dish {
+
+    //注意DishDto 继承了 Dish!!!
+    //注意DishDto 继承了 Dish!!!
+    //注意DishDto 继承了 Dish!!!
 
     private List<DishFlavor> flavors = new ArrayList<>();
 
