@@ -19,4 +19,4 @@ mybatis-plus:
       id-type: ASSIGN_ID
 #以环境变量的形式动态指定输出路径
 reggie:
-  path: D:\
+  path: D:\img\
