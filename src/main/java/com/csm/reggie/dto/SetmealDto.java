@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 public class SetmealDto extends Setmeal {
 
+    //保存套餐的多个菜品
     private List<SetmealDish> setmealDishes;
 
     private String categoryName;

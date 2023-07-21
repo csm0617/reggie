@@ -121,4 +121,20 @@ public class DishController {
         return R.success("修改菜品信息成功");
     }
 
+    @GetMapping("/list")
+    public  R<List<Dish>> list(Dish dish){
+        //日志输出入参
+        log.info(dish.toString());
+        //构造条件构造器
+        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
+        //添加条件，查询状态为1（起售状态）的菜品
+        queryWrapper.eq(Dish::getStatus,1);
+        //添加排序条件
+        queryWrapper.eq(dish.getCategoryId()!=null,Dish::getCategoryId,dish.getCategoryId()).orderByDesc(Dish::getSort);
+
+        List<Dish> dishList = dishService.list(queryWrapper);
+        return R.success(dishList);
+
+    }
+
 }
