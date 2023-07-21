@@ -3,12 +3,16 @@ package com.csm.reggie.controller;
 import com.csm.reggie.common.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -24,6 +28,12 @@ public class CommonController {
     @Value("${reggie.path}")
     private String bashPath;
 
+    /**
+     * 图片上传，文件名使用uuid生成
+     *
+     * @param file
+     * @return
+     */
     @PostMapping("/upload")
     public R<String> upload(MultipartFile file) {
         //file是一个临时文件，需要转存到指定位置，否则本次请求完成后临时文件会被删除
@@ -58,5 +68,49 @@ public class CommonController {
         }
         //返回文件名给前端
         return R.success(fileName);
+    }
+
+
+    /**
+     * 文件下载直接通过流的方式传输到HttpServletResponse中
+     * 所以返回值为空
+     * 调用接口时如果发现图片没有回显，可能是LoginCheckFilter中被拦截到了，可以放行"/common/**"，或者登录后再进行测试
+     * @param name
+     * @param response
+     */
+    @GetMapping("/download")
+    //并不符合restful风格的写法
+    public void download(String name, HttpServletResponse response) {
+
+        try {
+            //文件输入流，通过输入流读取文件内容
+            FileInputStream fileInputStream = new FileInputStream(new File(bashPath + name));
+
+            //输出流，通过输出流将文件写回到浏览器中，在浏览器中展示图片
+            ServletOutputStream outputStream = response.getOutputStream();
+            //如果明确了文件的类型可以设置好文件类型
+            response.setContentType("image/jpeg");
+            //定义一个bytes数组用于接收流的写入
+            int len = 0;
+            byte[] bytes = new byte[1024];
+            //当len!=-1说明没有读完，继续读
+            while ((len = fileInputStream.read(bytes)) != -1) {
+                //此时输入流已经将文件读到bytes中
+                //每次循环，将bytes写到outputStream中，写0到Len长度
+                outputStream.write(bytes,0,len);
+                //每次循环，刷新缓存区
+                outputStream.flush();
+            }
+            //跳出while循环，此时文件已经写完了
+
+            //流相关的操作记得一定关闭资源，避免浪费，jdk8中的stream流有终结操作符
+            outputStream.close();
+            fileInputStream.close();
+
+        } catch (Exception e) {//一般都是捕获最大的的异常Exception
+
+            throw new RuntimeException(e);
+        }
+
     }
 }
