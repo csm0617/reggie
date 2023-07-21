@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @Slf4j
 @RequestMapping("/category")
@@ -62,6 +64,26 @@ public class CategoryController {
         log.info("删除的分类为：{}",category.toString());
         categoryService.updateById(category);
         return R.success("分类修改成功");
+    }
+
+    /**
+     * 根据条件查询分类，菜品时下拉框获取到一个分类的list
+     * @param category
+     * @return
+     */
+    @GetMapping("/list")
+    //这里前端没有传json对象，所以不能加@RequesBody注解
+    public R<List<Category>> list(Category category){
+        //条件构造器
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        //添加条件
+        queryWrapper.eq(category.getType()!=null,Category::getType,category.getType());
+        //添加排序条件,根据Category表的sort字段进行排序,Asc升序，Desc降序
+        queryWrapper.orderByAsc(Category::getSort).orderByDesc(Category::getUpdateTime);
+        //调用categoryService.list()来查询集合
+        List<Category> list = categoryService.list(queryWrapper);
+        //封装返回
+        return R.success(list);
     }
 
 }
