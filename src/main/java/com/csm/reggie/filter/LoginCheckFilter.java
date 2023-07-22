@@ -44,12 +44,26 @@ public class LoginCheckFilter implements Filter {
             return;
         }
 
+        //4.判断移动端用户登陆状态，如果已登录，就直接放行
+        if (request.getSession().getAttribute("user") != null){
+            Long user= (Long)request.getSession().getAttribute("user");
+            log.info("移动端用户: {}"+"已登录",user);
+            //输出检查一下当前线程的Id看看是否和登录是同一个线程
+            log.info("当前线程的id为 {}", Thread.currentThread().getId());
+            //将empId存入threadLocal封装类中保存
+            BaseContext.setCurrentId(user);
+            filterChain.doFilter(request,response);
+            return;
+        }
+
         String[] urls =new String[]{
                 "/employee/login",
                 "/employee/logout",
                 "/backend/**",
-                "/frond/**",
-                "/common/**"
+                "/front/**",
+                "/common/**",
+                "/user/sendMsg",
+                "/user/login"
         };
 
         //2.判断本次请求是否需要处理
